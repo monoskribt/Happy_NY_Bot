@@ -1,18 +1,20 @@
 package com.example.telegram_bot_days_to_new_year;
 
-import com.example.telegram_bot_days_to_new_year.controller_bot.TelegramBotController;
+import com.example.telegram_bot_days_to_new_year.props.TelegramBotProps;
 import lombok.SneakyThrows;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-import org.telegram.telegrambots.meta.TelegramBotsApi;
-import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.scheduling.annotation.EnableScheduling;
+
 
 @SpringBootApplication
+@EnableConfigurationProperties(TelegramBotProps.class)
+@EnableScheduling
 public class TelegramBotDaysToNewYearApplication {
 
     @SneakyThrows
     public static void main(String[] args) {
-        ApplicationContext context = SpringApplication.run(TelegramBotDaysToNewYearApplication.class, args);
+        SpringApplication.run(TelegramBotDaysToNewYearApplication.class, args);
     }
 }
