@@ -1,9 +1,9 @@
 package com.example.telegram_bot_days_to_new_year.bot;
 
 import com.example.telegram_bot_days_to_new_year.props.TelegramBotProps;
-import com.example.telegram_bot_days_to_new_year.entity.BotUser;
-import com.example.telegram_bot_days_to_new_year.services.impl.TelegramBotAnswersImpl;
-import com.example.telegram_bot_days_to_new_year.services.impl.TelegramBotService;
+import com.example.telegram_bot_days_to_new_year.model.BotUser;
+import com.example.telegram_bot_days_to_new_year.service.BotUserService;
+import com.example.telegram_bot_days_to_new_year.service.impl.TelegramBotAnswersImpl;
 import lombok.SneakyThrows;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
@@ -23,16 +23,19 @@ import static com.example.telegram_bot_days_to_new_year.constants.BotCommands.*;
 public class TelegramBot extends TelegramLongPollingBot {
 
     private final TelegramBotProps telegramBotProps;
-    private final TelegramBotService telegramBotService;
+    private final BotUserService botUserService;
     private final TelegramBotAnswersImpl telegramBotAnswers;
 
     private final ConcurrentHashMap<Long, LocalDateTime> blockedUser = new ConcurrentHashMap<>();
 
 
-    public TelegramBot(DefaultBotOptions options, TelegramBotProps telegramBotProps, TelegramBotService telegramBotService, TelegramBotAnswersImpl telegramBotAnswers) {
+    public TelegramBot(DefaultBotOptions options,
+                       TelegramBotProps telegramBotProps,
+                       BotUserService botUserService,
+                       TelegramBotAnswersImpl telegramBotAnswers) {
         super(options, telegramBotProps.getToken());
         this.telegramBotProps = telegramBotProps;
-        this.telegramBotService = telegramBotService;
+        this.botUserService = botUserService;
         this.telegramBotAnswers = telegramBotAnswers;
     }
 
@@ -67,7 +70,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                     break;
                 case QUIT_FROM_BOT:
                     telegramBotAnswers.quitAnswer(chatId);
-                    telegramBotService.deleteUser(chatId);
+                    botUserService.deleteUser(chatId);
                     blockedUser.put(chatId, LocalDateTime.now().plusSeconds(10));
                     break;
                 default:
@@ -91,13 +94,13 @@ public class TelegramBot extends TelegramLongPollingBot {
         return true;
     }
 
-    @Scheduled(fixedRate = 10000, initialDelay = 10000)
+    @Scheduled(cron = "0 0 8 * * *")
     @SneakyThrows
     private void leftDaysToNewYear() {
         long daysTo = helperDaysToNewYear();
         String text = "Days left to New Year: *" + daysTo + "*";
 
-        List<BotUser> usersId = telegramBotService.findAllUsersWithSubscribeStatus();
+        List<BotUser> usersId = botUserService.findAllUsersWithSubscribeStatus();
         usersId.forEach(user -> telegramBotAnswers.sendMessage(user.getId(), text));
     }
 

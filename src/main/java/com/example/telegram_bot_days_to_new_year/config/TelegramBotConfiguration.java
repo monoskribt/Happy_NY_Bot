@@ -2,8 +2,8 @@ package com.example.telegram_bot_days_to_new_year.config;
 
 import com.example.telegram_bot_days_to_new_year.bot.TelegramBot;
 import com.example.telegram_bot_days_to_new_year.props.TelegramBotProps;
-import com.example.telegram_bot_days_to_new_year.services.impl.TelegramBotAnswersImpl;
-import com.example.telegram_bot_days_to_new_year.services.impl.TelegramBotService;
+import com.example.telegram_bot_days_to_new_year.service.BotUserService;
+import com.example.telegram_bot_days_to_new_year.service.impl.TelegramBotAnswersImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +17,7 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 public class TelegramBotConfiguration {
 
     private final TelegramBotProps telegramBotProps;
-    private final TelegramBotService telegramBotService;
+    private final BotUserService botUserService;
     private final TelegramBotAnswersImpl telegramBotAnswers;
 
 
@@ -31,7 +31,7 @@ public class TelegramBotConfiguration {
     @SneakyThrows
     public TelegramBot telegramBot(TelegramBotsApi telegramBotsApi) {
         var botOptions = new DefaultBotOptions();
-        var bot = new TelegramBot(botOptions, telegramBotProps, telegramBotService, telegramBotAnswers);
+        var bot = new TelegramBot(botOptions, telegramBotProps, botUserService, telegramBotAnswers);
         telegramBotsApi.registerBot(bot);
         return bot;
     }

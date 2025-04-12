@@ -1,4 +1,4 @@
-package com.example.telegram_bot_days_to_new_year.services;
+package com.example.telegram_bot_days_to_new_year.service;
 
 public interface AnswersInterface {
     void startAnswer(Long id);
