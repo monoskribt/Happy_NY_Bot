@@ -1,7 +1,8 @@
-package com.example.telegram_bot_days_to_new_year.services.impl;
+package com.example.telegram_bot_days_to_new_year.service.impl;
 
-import com.example.telegram_bot_days_to_new_year.enums.SubsStatus;
-import com.example.telegram_bot_days_to_new_year.services.AnswersInterface;
+import com.example.telegram_bot_days_to_new_year.enums.UserSubsStatus;
+import com.example.telegram_bot_days_to_new_year.service.AnswersInterface;
+import com.example.telegram_bot_days_to_new_year.service.BotUserService;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -14,37 +15,37 @@ import static com.example.telegram_bot_days_to_new_year.enums.TextAnswersFromBot
 @Service
 public class TelegramBotAnswersImpl implements AnswersInterface {
 
-    private final TelegramBotService telegramBotService;
+    private final BotUserService botUserService;
 
     @Autowired
     @Lazy
     private AbsSender absSender;
 
-    public TelegramBotAnswersImpl(TelegramBotService telegramBotService) {
-        this.telegramBotService = telegramBotService;
+    public TelegramBotAnswersImpl(BotUserService botUserService) {
+        this.botUserService = botUserService;
     }
 
     @Override
     public void startAnswer(Long id) {
-        if (telegramBotService.isUserExistsWithId(id)) {
-            SubsStatus status = telegramBotService.getUserSubscriptionStatus(id);
-            sendMessage(id, status.equals(SubsStatus.SUBSCRIBE) ?
+        if (botUserService.isUserExistsWithId(id)) {
+            UserSubsStatus status = botUserService.getUserSubscriptionStatus(id);
+            sendMessage(id, status.equals(UserSubsStatus.SUBSCRIBE) ?
                     SUBSCRIBED_ALREADY_TEXT.getText() : UNSUBSCRIBE_WITHOUT_MAIN_PATH_TEXT.getText());
         } else {
             sendMessage(id, START_TEXT.getText());
-            telegramBotService.addUser(id);
+            botUserService.addUser(id);
         }
     }
 
     @Override
     public void unsubscribeAnswer(Long id) {
-        telegramBotService.unsubscribeUser(id);
+        botUserService.unsubscribeUser(id);
         sendMessage(id, UNSUBSCRIBE_TEXT.getText());
     }
 
     @Override
     public void subscribeAnswer(Long id) {
-        telegramBotService.subscribeUser(id);
+        botUserService.subscribeUser(id);
         sendMessage(id, SUBSCRIBE_TEXT.getText());
     }
 
